@@ -74,12 +74,18 @@ async function simulatePending(preview, walletNativeBalance) {
   if (sim && Array.isArray(sim) && sim[0] && Array.isArray(sim[0].calls) && sim[0].calls[0]) {
     const c = sim[0].calls[0];
     const ok = c.status === "0x1";
+    let errStr = null;
+    if (!ok) {
+      if (typeof c.error === "string") errStr = c.error;
+      else if (c.error && typeof c.error === "object") errStr = c.error.message || JSON.stringify(c.error);
+      else errStr = "execution reverted";
+    }
     return {
       method: "eth_simulateV1",
       status: ok ? "success" : "revert",
       returnData: c.returnData || "0x",
       logs: c.logs || [],
-      error: ok ? null : c.error || "execution reverted",
+      error: errStr,
       effectsPartial: false,
     };
   }

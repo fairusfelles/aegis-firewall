@@ -1,0 +1,12 @@
+{
+  "chainId": 56,
+  "from": "0xB0CC11F63e5aAa7bcB6010B28A4C0A94FB23D889",
+  "to": "0xfB50746BCc9D585AEb49cd410Fa0100b657ce9e6",
+  "value": "0",
+  "data": "0xf366afc9",
+  "claim": {
+    "nativeOut": "0",
+    "tokensOut": [],
+    "purpose": "Historical replay: RuninAI claimFree() — executed successfully 2026-11-02 (tx 0xd3c2c4e97332bbfa02b1d6d765619aa8962e6442844327ed6e71986fc3c62765); 50,000 RUNINAI received; wallet has already claimed"
+  }
+}

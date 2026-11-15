@@ -1,0 +1,12 @@
+{
+  "chainId": 56,
+  "from": "0xB0CC11F63e5aAa7bcB6010B28A4C0A94FB23D889",
+  "to": "0xb9d0CA9b63C564443AfE64B77ef91B3bA763e5f1",
+  "value": "0",
+  "data": "0x195ad114",
+  "claim": {
+    "nativeOut": "0",
+    "tokensOut": [],
+    "purpose": "Historical replay: FEG free share claim (agentfeg.xyz, 2026-11-10 race; the free tranche was exhausted within seconds and sarah.ai never claimed)"
+  }
+}

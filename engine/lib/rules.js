@@ -110,7 +110,9 @@ const RULES = [
     evaluate(ev) {
       if (ev.simulation.status === "success") return C("the pending call succeeds under simulation from the agent wallet");
       if (ev.simulation.status === "revert")
-        return T(`the pending call reverts under simulation from the agent wallet (${ev.simulation.error || "execution reverted"})`);
+        return T(
+          `the pending call reverts under simulation from the agent wallet (${String(ev.simulation.error || "execution reverted").slice(0, 220)})`
+        );
       return T(`simulation could not be completed (${ev.simulation.error || "unknown error"}) — fail closed`);
     },
   },
@@ -153,11 +155,15 @@ const RULES = [
       const gate =
         ev.token.owner && ev.token.owner !== ZERO && ev.token.owner !== "none"
           ? `mint authority retained (owner ${ev.token.owner})`
-          : c.mintGated === false
-            ? "mint path is ungated (callable by anyone)"
-            : c.mintGated === true
-              ? "mint path is gated to a retained authority (modifier/sender check in source)"
-              : null;
+          : ev.token.mintProbe === "callable"
+            ? "mint path proven callable by an arbitrary wallet (a probe mint succeeded in simulation)"
+            : ev.token.mintProbe === "reverts"
+              ? "mint path is gated in effect (a probe mint from an arbitrary wallet reverts) — a retained authority/phase controls it, and no cap bounds it"
+              : c.mintGated === false
+                ? "mint path appears ungated in source"
+                : c.mintGated === true
+                  ? "mint path is gated to a retained authority (modifier/sender check in source)"
+                  : null;
       if (!gate) return NI("a mint path exists with no cap found, but the mint authority could not be determined");
       return T(
         `token has a live mint path (${c.mintNames.join(", ")}) with no enforced supply cap found, and ${gate}. ` +
@@ -216,8 +222,22 @@ const RULES = [
     name: "Fresh contract, high value",
     evaluate(ev) {
       if (!ev.target.isContract) return C("target is not a contract");
-      if (ev.target.ageSeconds === null || ev.target.ageSeconds === undefined)
-        return NI("contract creation block could not be determined, so its age is unknown");
+      if (ev.target.ageSeconds === null || ev.target.ageSeconds === undefined) {
+        // Only a lower bound on age is provable when the creation block
+        // predates the RPC endpoints' state-retention window.
+        if (
+          ev.target.ageLowerBoundSeconds !== null &&
+          ev.target.ageLowerBoundSeconds !== undefined &&
+          ev.target.ageLowerBoundSeconds >= FRESH_AGE_S
+        ) {
+          const boundMin = Math.round(ev.target.ageLowerBoundSeconds / 60);
+          const boundHuman = boundMin >= 120 ? `${(boundMin / 60).toFixed(1)} h` : `${boundMin} min`;
+          return C(
+            `contract already existed at the oldest readable chain state ${boundHuman} ago (public RPCs prune older state) — provably not fresh`
+          );
+        }
+        return NI("contract creation block could not be determined within the RPC state-retention window, so its age is unknown");
+      }
       if (ev.target.ageSeconds >= FRESH_AGE_S)
         return C(`contract age ${Math.round(ev.target.ageSeconds / 60)} min >= FRESH_AGE (1 h)`);
       const value = BigInt(ev.preview.value || "0");

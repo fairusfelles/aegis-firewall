@@ -1,0 +1,12 @@
+{
+  "chainId": 56,
+  "from": "0xB0CC11F63e5aAa7bcB6010B28A4C0A94FB23D889",
+  "to": "0xBB7eD59ca41eA03cf20084a8c9de94244B7B2637",
+  "value": "0",
+  "data": "0xa0712d680000000000000000000000000000000000000000000000000000000000000000",
+  "claim": {
+    "nativeOut": "0",
+    "tokensOut": [],
+    "purpose": "Historical replay: BNBbaby mint(0) free mint — executed successfully 2026-11-02 (tx 0x66cfa1d19e35ea04143b1cba52566dcd8b1a7c4075420aa0149ca273e2601b6c); 10,000,000 BNBbaby received; wallet has already claimed"
+  }
+}

@@ -4,7 +4,10 @@
   "description": "**Don't trust the agent. Verify it.**",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "screen": "node engine/screen.js",
+    "test:fixtures": "node engine/run_fixtures.js",
+    "replays": "node engine/run_replays.js"
   },
   "repository": {
     "type": "git",

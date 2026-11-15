@@ -1,0 +1,276 @@
+{
+  "engine": "aegis-screen",
+  "engineVersion": "1.0.0",
+  "ruleSetVersion": 1,
+  "screenedAt": "2026-11-15T20:48:02.085Z",
+  "blockNumber": 133802201,
+  "blockTimestamp": 1794775659,
+  "preview": {
+    "chainId": 56,
+    "from": "0xb0cc11f63e5aaa7bcb6010b28a4c0a94fb23d889",
+    "to": "0xb9d0ca9b63c564443afe64b77ef91b3ba763e5f1",
+    "value": "0",
+    "data": "0x195ad114",
+    "claim": {
+      "nativeOut": "0",
+      "tokensOut": [],
+      "purpose": "Historical replay: FEG free share claim (agentfeg.xyz, 2026-11-10 race; the free tranche was exhausted within seconds and sarah.ai never claimed)"
+    }
+  },
+  "decoded": {
+    "kind": "generic",
+    "name": "claimFreeShare",
+    "signature": "claimFreeShare()",
+    "selectorHex": "0x195ad114",
+    "args": {},
+    "swap": null
+  },
+  "contexts": {
+    "approval": false,
+    "buy": true
+  },
+  "verdict": 2,
+  "verdictLabel": "BLOCK",
+  "rulesBitmap": "67108872",
+  "fields": [
+    "1",
+    "56",
+    "11033333002124409167004518207820315382108636855136374165509195851716823805418",
+    "19306902421097981340990594828898994379455558232745355077855057007759653905350",
+    "7669313413104593573516258490556431675032081448144313214476911448199401134888",
+    "133802201"
+  ],
+  "commitment": "9555859236113765431358584750040979350044395520375034824188836465809504438326",
+  "rules": [
+    {
+      "id": "AEGIS-B01",
+      "name": "Unlimited approval to untrusted spender",
+      "status": "CLEAR",
+      "reason": "not an approval-granting call"
+    },
+    {
+      "id": "AEGIS-B02",
+      "name": "Unverified target with native value",
+      "status": "CLEAR",
+      "reason": "call carries no native value"
+    },
+    {
+      "id": "AEGIS-B03",
+      "name": "Value-out mismatch (claims vs effects)",
+      "status": "NOT_IMPLEMENTED",
+      "reason": "simulation did not succeed, so effects are unavailable (the failure itself is B04)"
+    },
+    {
+      "id": "AEGIS-B04",
+      "name": "Simulation revert (fail closed)",
+      "status": "TRIGGERED",
+      "reason": "the pending call reverts under simulation from the agent wallet (execution reverted)"
+    },
+    {
+      "id": "AEGIS-B05",
+      "name": "Honeypot — sell path blocked",
+      "status": "NOT_IMPLEMENTED",
+      "reason": "wallet holds no balance of the token yet (pre-acquisition), so a sell cannot be probed in v1"
+    },
+    {
+      "id": "AEGIS-B06",
+      "name": "Hidden mint is live",
+      "status": "CLEAR",
+      "reason": "no externally callable mint / supply-increasing path in the token census"
+    },
+    {
+      "id": "AEGIS-B07",
+      "name": "Sell fee is confiscatory",
+      "status": "NOT_IMPLEMENTED",
+      "reason": "fee probe did not run (no pair / no balance / simulate unavailable)"
+    },
+    {
+      "id": "AEGIS-B08",
+      "name": "Deployer has rug history",
+      "status": "NOT_IMPLEMENTED",
+      "reason": "deployer rug-history requires explorer labels or an operator denylist (META); no label source is configured in v1 (explorer APIs require a key) — rule not evaluated"
+    },
+    {
+      "id": "AEGIS-B09",
+      "name": "Fake renounce / hidden ownership",
+      "status": "CLEAR",
+      "reason": "token exposes no owner() — fake-renounce pattern not applicable"
+    },
+    {
+      "id": "AEGIS-B10",
+      "name": "Fresh contract, high value",
+      "status": "NOT_IMPLEMENTED",
+      "reason": "contract creation block could not be determined within the RPC state-retention window, so its age is unknown"
+    },
+    {
+      "id": "AEGIS-B11",
+      "name": "LP held by deployer",
+      "status": "NOT_IMPLEMENTED",
+      "reason": "requires holder/LP market-structure data (MKT) from an explorer/indexer; v1 has no such source configured (BscScan API requires a key) — rule not evaluated"
+    },
+    {
+      "id": "AEGIS-B12",
+      "name": "Holder concentration, extreme",
+      "status": "NOT_IMPLEMENTED",
+      "reason": "requires holder/LP market-structure data (MKT) from an explorer/indexer; v1 has no such source configured (BscScan API requires a key) — rule not evaluated"
+    },
+    {
+      "id": "AEGIS-B13",
+      "name": "Permit replay / permit mismatch",
+      "status": "CLEAR",
+      "reason": "call is not a permit"
+    },
+    {
+      "id": "AEGIS-B14",
+      "name": "Proxy with uninitialized implementation",
+      "status": "CLEAR",
+      "reason": "target is not an EIP-1967 proxy"
+    },
+    {
+      "id": "AEGIS-W01",
+      "name": "Limited approval to authority-retained spender",
+      "status": "CLEAR",
+      "reason": "not an approval-granting call"
+    },
+    {
+      "id": "AEGIS-W02",
+      "name": "Unbounded fee setter",
+      "status": "CLEAR",
+      "reason": "no fee/tax setter in the token census"
+    },
+    {
+      "id": "AEGIS-W03",
+      "name": "Elevated transfer fee",
+      "status": "NOT_IMPLEMENTED",
+      "reason": "fee probe did not run (no pair / no balance / simulate unavailable)"
+    },
+    {
+      "id": "AEGIS-W04",
+      "name": "Transfer-restriction capability",
+      "status": "CLEAR",
+      "reason": "no blacklist / max-tx / max-wallet / trading-gate controls in the token census"
+    },
+    {
+      "id": "AEGIS-W05",
+      "name": "Upgradeable proxy, retained admin",
+      "status": "CLEAR",
+      "reason": "target is not behind an EIP-1967 proxy"
+    },
+    {
+      "id": "AEGIS-W06",
+      "name": "LP not locked or burned",
+      "status": "NOT_IMPLEMENTED",
+      "reason": "requires holder/LP market-structure data (MKT) from an explorer/indexer; v1 has no such source configured (BscScan API requires a key) — rule not evaluated"
+    },
+    {
+      "id": "AEGIS-W07",
+      "name": "Holder concentration",
+      "status": "NOT_IMPLEMENTED",
+      "reason": "requires holder/LP market-structure data (MKT) from an explorer/indexer; v1 has no such source configured (BscScan API requires a key) — rule not evaluated"
+    },
+    {
+      "id": "AEGIS-W08",
+      "name": "Thin liquidity",
+      "status": "NOT_IMPLEMENTED",
+      "reason": "requires holder/LP market-structure data (MKT) from an explorer/indexer; v1 has no such source configured (BscScan API requires a key) — rule not evaluated"
+    },
+    {
+      "id": "AEGIS-W09",
+      "name": "LP-drain functions present",
+      "status": "CLEAR",
+      "reason": "no LP-drain functions (migrateLP / emergencyWithdraw / setPair / setRouter) with a retained owner in the census"
+    },
+    {
+      "id": "AEGIS-W10",
+      "name": "Oracle read without staleness/confidence check",
+      "status": "CLEAR",
+      "reason": "no unchecked oracle-read pattern (latestRoundData without updatedAt, Pyth getPriceUnsafe) in target source"
+    },
+    {
+      "id": "AEGIS-W11",
+      "name": "Sandwich amplification by design",
+      "status": "TRIGGERED",
+      "reason": "the token's own swapback path calls a swap with amountOutMin = 0 (zero slippage): swapExactTokensForETHSupportingFeeOnTransferTokens(lot, 0,"
+    },
+    {
+      "id": "AEGIS-W12",
+      "name": "Bonding-curve admin controls",
+      "status": "CLEAR",
+      "reason": "no bonding-curve admin setters with a retained admin in the target census"
+    },
+    {
+      "id": "AEGIS-W13",
+      "name": "ERC4626 first-depositor window",
+      "status": "CLEAR",
+      "reason": "target does not expose the ERC4626 totalAssets()/asset() surface"
+    },
+    {
+      "id": "AEGIS-A01",
+      "name": "Right-sized approval to clean spender",
+      "status": "CLEAR",
+      "reason": "not an approval-granting call"
+    },
+    {
+      "id": "AEGIS-A02",
+      "name": "Authorities verifiably gone",
+      "status": "CLEAR",
+      "reason": "authority clearance incomplete (mint cleared: true, owner renounced & clean: false, no blacklist: true, no fee setters: true)"
+    },
+    {
+      "id": "AEGIS-A03",
+      "name": "LP burned or long-locked",
+      "status": "NOT_IMPLEMENTED",
+      "reason": "requires holder/LP market-structure data (MKT) from an explorer/indexer; v1 has no such source configured (BscScan API requires a key) — rule not evaluated"
+    }
+  ],
+  "ruleCounts": {
+    "TRIGGERED": 2,
+    "CLEAR": 16,
+    "NOT_IMPLEMENTED": 12
+  },
+  "effects": {
+    "nativeDelta": "0",
+    "tokenDeltas": [],
+    "allowanceDeltas": []
+  },
+  "probes": {
+    "sell": null
+  },
+  "target": {
+    "address": "0xb9d0ca9b63c564443afe64b77ef91b3ba763e5f1",
+    "isContract": true,
+    "verification": "verified",
+    "name": "CanopySale",
+    "owner": "none",
+    "proxy": {
+      "isProxy": false,
+      "implementation": null,
+      "admin": null
+    },
+    "ageSeconds": null,
+    "ageLowerBoundSeconds": 3257,
+    "isERC4626": false
+  },
+  "token": {
+    "address": "0x701d2eea5049eb3e9c69f7b6dff4c5f010eae54c",
+    "verification": "verified",
+    "name": "FeedEveryGorilla",
+    "owner": "none",
+    "capGetter": {
+      "present": false,
+      "name": null,
+      "value": null
+    },
+    "pair": "0x73043d0d1b613129050776821aafaace47865b8c",
+    "walletBalance": "0",
+    "decimals": 18,
+    "mintProbe": null
+  },
+  "dataSources": {
+    "rpc": "ok",
+    "sourcify": "ok",
+    "simulation": "eth_simulateV1",
+    "market": "not-implemented-v1"
+  },
+  "warnings": []
+}

@@ -137,6 +137,7 @@ async function screenPreview(preview) {
     proxy: { isProxy: false, implementation: null, admin: null },
     implInitializeProbe: null,
     ageSeconds: null,
+    ageLowerBoundSeconds: null,
     isERC4626: false,
     vaultEmpty: null,
   };
@@ -172,12 +173,17 @@ async function screenPreview(preview) {
       const totalSupply = await probeUint(to, "totalSupply()");
       target.vaultEmpty = (totalSupply === 0n) || totalAssets === 0n;
     }
-    // Age via creation-block binary search (B10)
+    // Age via creation-block search (B10). Public endpoints prune
+    // state, so for older contracts only a lower bound on age is
+    // provable — which is all the freshness rule needs.
     try {
-      const creationBlock = await rpc.findCreationBlock(to, blockNumber);
-      if (creationBlock !== null) {
-        const cb = await rpc.getBlock(creationBlock);
+      const found = await rpc.findCreationBlock(to, blockNumber);
+      if (found.creationBlock !== null) {
+        const cb = await rpc.getBlock(found.creationBlock);
         if (cb) target.ageSeconds = Math.max(0, blockTimestamp - cb.timestamp);
+      } else if (found.existedByBlock !== null) {
+        const eb = await rpc.getBlock(found.existedByBlock);
+        if (eb) target.ageLowerBoundSeconds = Math.max(0, blockTimestamp - eb.timestamp);
       }
     } catch {
       warnings.push("creation-block lookup failed — contract age unknown");
@@ -230,6 +236,35 @@ async function screenPreview(preview) {
     const dec = await probeUint(address, "decimals()");
     t.decimals = dec !== null ? Number(dec) : null;
     t.pair = await resolvePair(address, src.abi);
+    // Mint-liveness probe (B06): if the census found a mint path, try
+    // calling it from the agent wallet with benign arguments. Success
+    // proves the path is live and ungated; a revert proves it is gated
+    // in effect (authority / phase / payment), which the rule reports
+    // precisely instead of guessing from source patterns alone.
+    t.mintProbe = null;
+    if (src.census && src.census.available && src.census.mint) {
+      const entry = (src.abi || []).find((x) => x.type === "function" && src.census.mintNames.includes(x.name));
+      if (entry) {
+        try {
+          const frag = `function ${entry.name}(${(entry.inputs || []).map((i) => i.type).join(",")})`;
+          const iface = new ethers.utils.Interface([frag]);
+          const args = (entry.inputs || []).map((i) => {
+            if (/^u?int/.test(i.type)) return "1";
+            if (i.type === "address") return from;
+            if (i.type === "bool") return false;
+            if (i.type === "bytes32") return ethers.constants.HashZero;
+            if (i.type === "bytes") return "0x";
+            if (i.type === "string") return "";
+            if (i.type.endsWith("[]")) return [];
+            throw new Error("unsupported arg type " + i.type);
+          });
+          const r = await rpc.tryCall({ from, to: address, data: iface.encodeFunctionData(entry.name, args) });
+          t.mintProbe = r !== null ? "callable" : "reverts";
+        } catch {
+          t.mintProbe = null;
+        }
+      }
+    }
     return t;
   };
   if (decoded.kind === "swap" && decoded.swap) {
@@ -397,6 +432,7 @@ async function screenPreview(preview) {
       owner: target.owner,
       proxy: target.proxy,
       ageSeconds: target.ageSeconds,
+      ageLowerBoundSeconds: target.ageLowerBoundSeconds,
       isERC4626: target.isERC4626,
     },
     token: token
@@ -409,6 +445,7 @@ async function screenPreview(preview) {
           pair: token.pair,
           walletBalance: token.walletBalance.toString(),
           decimals: token.decimals,
+          mintProbe: token.mintProbe,
         }
       : null,
     dataSources: {

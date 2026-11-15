@@ -3,9 +3,12 @@
 // No private keys, no signing, no transaction submission anywhere in the
 // engine — this client only ever reads chain state and simulates calls.
 
+// Order matters for historical reads: publicnode retains ~1-2 h of
+// state while the Binance seed nodes prune within ~2,000 blocks
+// (measured 2026-11-16). All three serve current state equally.
 const DEFAULT_ENDPOINTS = [
-  "https://bsc-dataseed.binance.org",
   "https://bsc.publicnode.com",
+  "https://bsc-dataseed.binance.org",
   "https://bsc-dataseed1.bnbchain.org",
 ];
 
@@ -52,11 +55,16 @@ async function rpc(method, params, { timeoutMs = 25000 } = {}) {
       return await rpcOnce(url, method, params, timeoutMs);
     } catch (e) {
       lastErr = e;
-      // Method-not-available on this endpoint: try the next one.
-      // Execution reverts are deterministic: rethrow immediately.
-      if (e.rpcCode !== undefined && e.rpcCode !== -32601 && !/not (available|exist)/i.test(e.message)) {
-        throw e;
-      }
+      // Fail over when the failure is endpoint-specific: method not
+      // available (-32601) or pruned state (-32000 "missing trie node"
+      // on historical reads — another endpoint may hold the archive).
+      // Execution reverts are deterministic across endpoints: rethrow.
+      const failoverable =
+        e.rpcCode === undefined ||
+        e.rpcCode === -32601 ||
+        /not (available|exist)/i.test(e.message) ||
+        (e.rpcCode === -32000 && !/revert/i.test(e.message));
+      if (!failoverable) throw e;
     }
   }
   throw lastErr || new Error("all RPC endpoints failed");
@@ -117,26 +125,101 @@ async function simulateV1(calls, stateOverrides) {
   }
 }
 
-// Find the first block at which `address` has code (contract creation
-// block) by binary search over eth_getCode. ~27 reads for BSC history.
+// The endpoints' state-retention boundary (oldest readable block).
+// Readability is monotonic in block height — pruning removes old state
+// first — so the boundary is found by exponential bracketing +
+// binary search, and cached per process (it is a property of the
+// endpoints, not of any contract; a stale cache can only degrade the
+// age bound toward "unknown", never toward a false "not fresh").
+let boundaryCache = null;
+async function retentionBoundary(latest, readable) {
+  if (boundaryCache && Math.abs(latest - boundaryCache.forLatest) < 100000)
+    return boundaryCache.oldestReadable;
+  let offset = 8192;
+  let deepest = latest; // deepest block proven readable
+  while (latest - offset >= 1 && (await readable(latest - offset))) {
+    deepest = latest - offset;
+    offset *= 2;
+  }
+  let result;
+  if (latest - offset < 1) {
+    result = 1; // everything readable back to genesis
+  } else {
+    // Boundary lies in (latest - offset, deepest].
+    let lo = latest - offset + 1;
+    let hi = deepest;
+    while (lo < hi) {
+      const mid = Math.floor((lo + hi) / 2);
+      if (await readable(mid)) hi = mid;
+      else lo = mid + 1;
+    }
+    result = lo;
+  }
+  boundaryCache = { forLatest: latest, oldestReadable: result };
+  return result;
+}
+
+// Locate a contract's creation block via eth_getCode probes. Public
+// BSC endpoints prune state (no free archive), so the search is
+// bounded by the state-retention window:
+//   - { creationBlock }  — exact first block with code, when creation
+//     happened inside the readable window;
+//   - { existedByBlock } — the contract already had code at the oldest
+//     readable block: a sound lower bound on its age (all the B10
+//     freshness rule needs for anything older than the window);
+//   - both null when neither can be shown.
 async function findCreationBlock(address, latest) {
-  let lo = 1;
-  let hi = latest;
   const codeAt = async (n) => {
     const c = await getCode(address, n);
     return c && c !== "0x";
   };
-  if (!(await codeAt(hi))) return null;
-  while (lo < hi) {
-    const mid = Math.floor((lo + hi) / 2);
-    if (await codeAt(mid)) hi = mid;
-    else lo = mid + 1;
+  // A block counts as readable when ANY endpoint can serve its state
+  // (full failover); the endpoint order above puts the deepest
+  // retention first, so historical probes usually succeed at once.
+  const readable = async (n) => {
+    try {
+      await getCode(address, n);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+  if (!(await codeAt(latest))) return { creationBlock: null, existedByBlock: null };
+  const oldestReadable = await retentionBoundary(latest, readable);
+  // existedBy is claimed only when a code read at the boundary block
+  // succeeds right now — that read is the proof.
+  let existed;
+  try {
+    existed = await codeAt(oldestReadable);
+  } catch {
+    return { creationBlock: null, existedByBlock: null };
   }
-  return lo;
+  if (existed) return { creationBlock: null, existedByBlock: oldestReadable };
+  // Creation is inside (oldestReadable, latest]: binary-search it.
+  // Probe errors are treated as "no code": public endpoints are
+  // load-balanced fleets with uneven pruning, so a transient
+  // missing-state error can only push the found creation block later
+  // (age underestimated) — the fail-safe direction for a freshness rule.
+  const codeAtSafe = async (n) => {
+    try {
+      return await codeAt(n);
+    } catch {
+      return false;
+    }
+  };
+  let lo2 = oldestReadable + 1;
+  let hi2 = latest;
+  while (lo2 < hi2) {
+    const mid = Math.floor((lo2 + hi2) / 2);
+    if (await codeAtSafe(mid)) hi2 = mid;
+    else lo2 = mid + 1;
+  }
+  return { creationBlock: lo2, existedByBlock: null };
 }
 
 module.exports = {
   rpc,
+  rpcOnce,
   toHex,
   getBlockNumber,
   getBlock,

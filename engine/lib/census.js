@@ -39,16 +39,24 @@ const NAME_PATTERNS = {
 };
 
 function census(abi, sources) {
-  const fnNames = (abi || [])
-    .filter((x) => x.type === "function")
-    .map((x) => x.name)
-    .filter(Boolean);
+  const fnEntries = (abi || []).filter((x) => x.type === "function" && x.name);
+  const fnNames = fnEntries.map((x) => x.name);
   const src = projectSourceText(sources);
   const hasSrc = src.length > 0;
 
   const matchNames = (re) => fnNames.filter((n) => re.test(n));
 
-  const mintNames = matchNames(NAME_PATTERNS.mint);
+  // A mint *path* must be state-changing: view getters such as
+  // mintedById(address) are not mint functions.
+  const mintNames = fnEntries
+    .filter(
+      (x) =>
+        /^mint/i.test(x.name) &&
+        !/^minted/i.test(x.name) &&
+        x.stateMutability !== "view" &&
+        x.stateMutability !== "pure"
+    )
+    .map((x) => x.name);
   const feeSetters = matchNames(NAME_PATTERNS.feeSetter);
   const lpFunctions = matchNames(NAME_PATTERNS.lpFunction);
   const transferRestrictions = matchNames(NAME_PATTERNS.transferRestriction);
