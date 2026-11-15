@@ -1,0 +1,12 @@
+{
+  "chainId": 56,
+  "from": "0xB0CC11F63e5aAa7bcB6010B28A4C0A94FB23D889",
+  "to": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+  "value": "50000000000000000",
+  "data": "0xd0e30db0",
+  "claim": {
+    "nativeOut": "0",
+    "tokensOut": [],
+    "purpose": "fixture: UI claims nothing leaves the wallet"
+  }
+}

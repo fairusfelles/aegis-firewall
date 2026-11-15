@@ -1,0 +1,12 @@
+{
+  "chainId": 56,
+  "from": "0xB0CC11F63e5aAa7bcB6010B28A4C0A94FB23D889",
+  "to": "0x000000000000000000000000000000000000dEaD",
+  "value": "1000000000000000",
+  "data": "0x",
+  "claim": {
+    "nativeOut": "1000000000000000",
+    "tokensOut": [],
+    "purpose": "fixture: plain transfer, claim matches value"
+  }
+}

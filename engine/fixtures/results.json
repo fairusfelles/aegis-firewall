@@ -1,0 +1,114 @@
+{
+  "ranAt": "2026-11-15T20:37:31.588Z",
+  "total": 5,
+  "passed": 5,
+  "results": [
+    {
+      "fixture": "approve-unlimited-unverified-spender.json",
+      "pass": true,
+      "checks": [
+        {
+          "ok": true,
+          "label": "verdict == 2 (got 2 BLOCK)"
+        },
+        {
+          "ok": true,
+          "label": "AEGIS-B01 TRIGGERED (got: AEGIS-B01)"
+        }
+      ],
+      "verdict": 2,
+      "verdictLabel": "BLOCK",
+      "blockNumber": 133800820,
+      "triggered": [
+        "AEGIS-B01"
+      ],
+      "rulesBitmap": "1",
+      "commitment": "10704669299825276548791221200251767384948700541058040186732372775512412787458",
+      "note": "Unlimited approve (2^256-1) on USDT to a freshly deployed contract with no Sourcify match (0x4bbc93371D26370E986a6B717c6Fc1928f2e85A4, pulled from a recent BSC block). B01 must fire via the unverified-spender branch."
+    },
+    {
+      "fixture": "approve-unlimited-verified-clean-spender.json",
+      "pass": true,
+      "checks": [
+        {
+          "ok": true,
+          "label": "verdict == 0 (got 0 ALLOW)"
+        },
+        {
+          "ok": true,
+          "label": "AEGIS-B01 not TRIGGERED"
+        }
+      ],
+      "verdict": 0,
+      "verdictLabel": "ALLOW",
+      "blockNumber": 133800831,
+      "triggered": [],
+      "rulesBitmap": "0",
+      "commitment": "14108340661740716405142671185596274398680723979225404096074642479686590372524",
+      "note": "Unlimited approve on USDT to the PancakeSwap V2 router (Sourcify-verified; census shows no retained privileged functions). No BLOCK may fire."
+    },
+    {
+      "fixture": "native-transfer-claimed.json",
+      "pass": true,
+      "checks": [
+        {
+          "ok": true,
+          "label": "verdict == 0 (got 0 ALLOW)"
+        }
+      ],
+      "verdict": 0,
+      "verdictLabel": "ALLOW",
+      "blockNumber": 133800838,
+      "triggered": [],
+      "rulesBitmap": "0",
+      "commitment": "12195361088263436776556978552200482591918653534722546028182689803605647927509",
+      "note": "Plain 0.001 BNB transfer to an EOA with a claim that matches the value exactly. Must ALLOW with bitmap 0."
+    },
+    {
+      "fixture": "simulation-revert.json",
+      "pass": true,
+      "checks": [
+        {
+          "ok": true,
+          "label": "verdict == 2 (got 2 BLOCK)"
+        },
+        {
+          "ok": true,
+          "label": "AEGIS-B04 TRIGGERED (got: AEGIS-B04)"
+        }
+      ],
+      "verdict": 2,
+      "verdictLabel": "BLOCK",
+      "blockNumber": 133800839,
+      "triggered": [
+        "AEGIS-B04"
+      ],
+      "rulesBitmap": "8",
+      "commitment": "12956671528549577349365097778407366865359106905233930120805455240997375251230",
+      "note": "USDT transfer of 10^30 from a wallet that does not hold that balance — simulation reverts; the engine fails closed."
+    },
+    {
+      "fixture": "value-out-mismatch.json",
+      "pass": true,
+      "checks": [
+        {
+          "ok": true,
+          "label": "verdict == 2 (got 2 BLOCK)"
+        },
+        {
+          "ok": true,
+          "label": "AEGIS-B03 TRIGGERED (got: AEGIS-B03)"
+        }
+      ],
+      "verdict": 2,
+      "verdictLabel": "BLOCK",
+      "blockNumber": 133800844,
+      "triggered": [
+        "AEGIS-B03"
+      ],
+      "rulesBitmap": "4",
+      "commitment": "19212025733133208608058923419784781164835228203451016931401487570354292966024",
+      "note": "WBNB deposit() carrying 0.05 BNB while the preview claim states nativeOut = 0. Claims-vs-effects must catch it."
+    }
+  ]
+}
