@@ -1,0 +1,25 @@
+2026-11-15 20:10:23        API/INIT: RPC methods not decorated: archive_v1_body, archive_v1_call, archive_v1_finalizedHeight, archive_v1_genesisHash, archive_v1_hashByHeight, archive_v1_header, archive_v1_stopStorage, archive_v1_storage, archive_v1_storageDiff, archive_v1_storageDiff_stopStorageDiff, chainHead_v1_body, chainHead_v1_call, chainHead_v1_continue, chainHead_v1_follow, chainHead_v1_header, chainHead_v1_stopOperation, chainHead_v1_storage, chainHead_v1_unfollow, chainHead_v1_unpin, chainSpec_v1_chainName, chainSpec_v1_genesisHash, chainSpec_v1_properties, transactionWatch_v1_submitAndWatch, transactionWatch_v1_unwatch, transaction_v1_broadcast, transaction_v1_stop
+account: 5DPkxBdMPSwqULP7MqtyQPAuKcYQFqTnX9HinmqdABAjtd8V
+RAW system.account: {"nonce":"0","consumers":"0","providers":"0","sufficients":"0","data":{"free":"0","reserved":"0","frozen":"0","flags":"170,141,183,460,469,231,731,687,303,715,884,105,728"}}
+RAW verify result:
+{
+  "events": {
+    "_events": {},
+    "_eventsCount": 0
+  },
+  "transactionResult": {}
+}
+2026-11-15 20:10:24        RPC-CORE: subscribeStorage(keys?: Vec<StorageKey>): StorageChangeSet:: disconnected from wss://volta-rpc.zkverify.io: 1000:: Normal Closure
+2026-11-15 20:10:24        RPC-CORE: getHeader(hash?: BlockHash): Header:: disconnected from wss://volta-rpc.zkverify.io: 1000:: Normal Closure
+2026-11-15 20:10:24        RPC-CORE: getFinalizedHead(): BlockHash:: disconnected from wss://volta-rpc.zkverify.io: 1000:: Normal Closure
+2026-11-15 20:10:24        RPC-CORE: subscribeStorage(keys?: Vec<StorageKey>): StorageChangeSet:: disconnected from wss://volta-rpc.zkverify.io: 1000:: Normal Closure
+/home/hatch/workspace/aegis/node_modules/zkverifyjs/dist/commonjs/utils/transactions/errors/index.js:101
+        throw new Error(decodedError);
+              ^
+
+Error: disconnected from wss://volta-rpc.zkverify.io: 1000:: Normal Closure
+    at handleError (/home/hatch/workspace/aegis/node_modules/zkverifyjs/dist/commonjs/utils/transactions/errors/index.js:101:15)
+    at cancelTransaction (/home/hatch/workspace/aegis/node_modules/zkverifyjs/dist/commonjs/utils/transactions/index.js:76:44)
+    at /home/hatch/workspace/aegis/node_modules/zkverifyjs/dist/commonjs/utils/transactions/index.js:146:25
+
+Node.js v24.22.1

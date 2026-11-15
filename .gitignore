@@ -1,0 +1,7 @@
+.secrets/
+node_modules/
+tools/
+build/*.ptau
+build/*.zkey
+build/*.wtns
+build/verdict_commit_js/
