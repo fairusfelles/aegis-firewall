@@ -19,6 +19,9 @@
 //   * `assert` and `events` (required by circomlibjs's CJS build and
 //     by readable-stream) are aliased to their standard browser
 //     polyfill packages, installed as demo devDependencies.
+//   * The global `Buffer` (referenced by some bundled libraries,
+//     absent in browsers) is injected from the `buffer` package via
+//     src/buffer-shim.js.
 //
 // Usage:
 //   node build.mjs               build the site into ../docs
@@ -65,6 +68,7 @@ const shared = {
   platform: "browser",
   target: "es2020",
   define: { "process.env": "{}" },
+  inject: [resolve(demoDir, "src/buffer-shim.js")],
   plugins: [nodeBuiltins],
   logLevel: "info",
 };
