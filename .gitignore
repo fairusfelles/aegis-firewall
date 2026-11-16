@@ -5,3 +5,4 @@ build/*.ptau
 build/*.zkey
 build/*.wtns
 build/verdict_commit_js/
+seal/key.txt
