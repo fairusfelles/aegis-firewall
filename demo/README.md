@@ -12,9 +12,19 @@ entirely in the visitor's browser — there is no AEGIS server.
 | `index.html` | Page markup (copied to `docs/index.html`) |
 | `style.css` | Page styles (copied to `docs/assets/style.css`) |
 | `app.js` | Page UI logic (copied to `docs/assets/app.js`) |
-| `src/entry.js` | Bundle entry: re-exports the unmodified engine (`engine/screen.js`, `engine/lib/fields.js`) and embeds the committed replay cases + recorded reports from `engine/replays/` |
+| `DESIGN.md` | Design plan: tokens, layout, the one motion moment |
+| `vendor/anime.min.js` | Anime.js v4.5.0 UMD, vendored from the audited local install — no CDN for JS libraries (copied to `docs/assets/anime.min.js`) |
+| `src/entry.js` | Bundle entry: re-exports the unmodified engine (`engine/screen.js`, `engine/lib/fields.js`) and embeds the committed replay cases + recorded reports from `engine/replays/` and the sealed-proof record from `proofs/` |
 | `build.mjs` | esbuild bundling + site assembly into `../docs` |
 | `test-bundle.cjs` | Headless verification of the bundle (below) |
+
+The page opens on the recorded RuninAI screening — the verdict that
+is sealed on zkVerify — rendered in full from the committed report.
+Selecting a case loads its recorded report; "Screen it live"
+re-screens the preview in the box against current chain state. The
+single animated moment (Anime.js) is the live screening sequence:
+pipeline stages tick off, fired rule rows sweep, the verdict stamp
+lands. `prefers-reduced-motion` renders final states instantly.
 
 ## Build
 

@@ -8,6 +8,8 @@
 //   docs/assets/style.css  <- demo/style.css
 //   docs/assets/app.js     <- demo/app.js        (page UI logic)
 //   docs/assets/aegis.js   <- esbuild bundle of demo/src/entry.js
+//   docs/assets/anime.min.js <- demo/vendor/anime.min.js (Anime.js
+//                                v4.5.0 UMD, vendored — no CDN for JS)
 //   docs/.nojekyll         (serve everything as-is, no Jekyll)
 //
 // Browser adaptations are build-time only; no engine file is modified:
@@ -93,6 +95,7 @@ if (testBundle) {
   copyFileSync(resolve(demoDir, "index.html"), resolve(docsDir, "index.html"));
   copyFileSync(resolve(demoDir, "style.css"), resolve(assetsDir, "style.css"));
   copyFileSync(resolve(demoDir, "app.js"), resolve(assetsDir, "app.js"));
+  copyFileSync(resolve(demoDir, "vendor/anime.min.js"), resolve(assetsDir, "anime.min.js"));
   writeFileSync(resolve(docsDir, ".nojekyll"), "");
   console.log("site assembled into docs/");
 }

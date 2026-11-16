@@ -3,25 +3,30 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="aegis-build" content="2026-11-16.2">
 <title>AEGIS — Verifiable Signing Firewall for Agent Wallets</title>
-<meta name="description" content="Live demo of the AEGIS screening engine: deterministic ALLOW / WARN / BLOCK verdicts for agent-wallet transactions, sealed with a Poseidon commitment for zkVerify. Runs entirely in your browser against public BSC RPC + Sourcify.">
+<meta name="description" content="AEGIS screens a transaction before an agent wallet signs it: decode, simulate, judge against a 30-rule policy, and seal the verdict into a Poseidon commitment for zkVerify. This demo runs the real engine in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
+<!-- aegis-demo build: 2026-11-16.2 -->
 <div class="wrap">
 
 <header class="site">
   <div class="mark" aria-hidden="true">
-    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#58a6ff" stroke-width="1.6" stroke-linejoin="round">
+    <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#84a9c9" stroke-width="1.5" stroke-linejoin="round">
       <path d="M12 2.5 4.5 5.2v5.6c0 4.9 3.2 8.6 7.5 10.2 4.3-1.6 7.5-5.3 7.5-10.2V5.2L12 2.5z"/>
-      <path d="M8.8 12.1 11 14.3l4.2-4.6" stroke="#3fb950"/>
+      <path d="M8.8 12.1 11 14.3l4.2-4.6" stroke="#e9ebed"/>
     </svg>
   </div>
-  <div>
+  <div class="wordmark">
     <h1>AEGIS</h1>
-    <div class="tagline">Verifiable Signing Firewall for Agent Wallets — <em>don't trust the agent. Verify it.</em></div>
+    <p class="descriptor">Verifiable signing firewall for agent wallets. AEGIS screens a transaction before the wallet signs it — decodes it, simulates it, judges it against a 30-rule policy — and seals the verdict into a proof anyone can verify.</p>
   </div>
-  <nav>
+  <nav aria-label="Project">
     <a href="https://github.com/fairusfelles/aegis-firewall">GitHub</a>
     <a href="https://github.com/fairusfelles/aegis-firewall/blob/main/docs/POLICY.md">Policy</a>
     <a href="https://github.com/fairusfelles/aegis-firewall/blob/main/circuits/verdict_commit.circom">Circuit</a>
@@ -29,115 +34,114 @@
   </nav>
 </header>
 
-<p class="lede">
-  AEGIS screens a transaction <strong>before an agent wallet signs it</strong>: it decodes the call,
-  censuses every privileged function of the target contract, simulates the call against live chain
-  state, and evaluates a deterministic rule set (30 rules,
-  <a href="https://github.com/fairusfelles/aegis-firewall/blob/main/docs/POLICY.md">POLICY.md</a>)
-  into an <strong>ALLOW / WARN / BLOCK</strong> verdict. The verdict, the exact rules that fired, and
-  the observed effects are sealed into six canonical fields and a
-  <strong>Poseidon commitment</strong> — the inputs of the
-  <a href="https://github.com/fairusfelles/aegis-firewall/blob/main/circuits/verdict_commit.circom">VerdictCommit</a>
-  circuit, proven and verified on zkVerify (see the repo's SPIKE.md).
-</p>
+<main>
 
-<div class="panel">
-  <strong>This demo runs 100% in your browser.</strong>
-  There is no AEGIS server. The page bundles the exact engine code from the repository
-  (<span class="mono">engine/screen.js</span>) and talks directly to public BSC RPC endpoints and
-  <a href="https://sourcify.dev">Sourcify</a> from your machine. It is read-only by construction:
-  no keys, no signing, no transactions — only chain reads and simulated calls.
-  A screening takes roughly <strong>10–60 seconds</strong>: it downloads verified contract sources
-  and probes chain state.
-</div>
-
-<div class="note">
-  <strong>Honest labels.</strong> A verdict is computed against the chain state at one specific
-  block (shown with every result) and <strong>expires with that block</strong>. The three cases
-  below are real calls the agent wallet <span class="mono">sarah.ai</span> faced; re-screening
-  them today judges <em>today's</em> state — a window that has closed correctly reads BLOCK now.
-  Also: <strong>7 of the 30 rules always report NOT_IMPLEMENTED in engine v1</strong> (they need a
-  keyed explorer/indexer source). They are listed as such in every report — never silently passed.
-</div>
-
-<h2>1 · Pick a field case — or paste your own preview</h2>
-<div class="cases" id="cases"></div>
-
-<div class="panel">
-  <div class="small muted" style="margin-bottom:8px">
-    Transaction preview JSON — the same document a wallet's contract-call preview produces
-    (<span class="mono">{chainId, from, to, value, data, claim?}</span>). BSC (chainId 56) only in v1.
-    Editing the case preview is fine; the screening always runs on exactly what is in the box.
-  </div>
-  <textarea id="preview" spellcheck="false"></textarea>
-  <div style="margin-top:12px; display:flex; gap:14px; align-items:center; flex-wrap:wrap">
-    <button class="run" id="run">Run screening</button>
-    <span class="small muted" id="runhint">Read-only: this only reads chain state and simulates the call. Nothing is signed or sent.</span>
-  </div>
-  <div class="error" id="error" style="display:none"></div>
-</div>
-
-<div class="panel" id="progress" style="display:none">
-  <div><span class="spinner"></span><strong>Screening…</strong> <span class="muted" id="elapsed"></span></div>
-  <div class="progress-steps" id="steps" style="margin-top:10px">
-    <span class="step">1 · Decode</span><span class="step-arrow">→</span>
-    <span class="step">2 · Census</span><span class="step-arrow">→</span>
-    <span class="step">3 · Simulate</span><span class="step-arrow">→</span>
-    <span class="step">4 · Evaluate (30 rules)</span><span class="step-arrow">→</span>
-    <span class="step">5 · Seal (Poseidon)</span>
-  </div>
-  <div class="small muted">Fetching verified sources from Sourcify, probing authorities and proxy slots, simulating the call with <span class="mono">eth_simulateV1</span>, and locating the contract's creation block.</div>
-</div>
-
-<div id="results" style="display:none">
-  <h2>2 · Verdict</h2>
-  <div class="verdict-card" id="verdict-card">
-    <div class="vlabel" id="vlabel"></div>
-    <div class="vsub" id="vsub"></div>
-    <div class="vsub" id="vrecorded"></div>
+<section class="console" aria-label="Screening console">
+  <div class="console-head">
+    <h2>Screen a transaction</h2>
+    <p>Everything runs in your browser. This page bundles the exact engine code from the repository (<span class="mono">engine/screen.js</span>, unmodified) and reads BSC through public RPC endpoints and <a href="https://sourcify.dev">Sourcify</a>. Read-only by construction: no keys, no signing, nothing is sent. A live screening takes roughly 10–60 seconds — it downloads verified contract sources and probes chain state.</p>
   </div>
 
-  <h3>Canonical report fields (POLICY §7) — sealed by the commitment</h3>
-  <div class="panel">
-    <div class="kv" id="fields"></div>
-    <div class="small muted" style="margin-top:10px">
-      commitment = Poseidon(fields[0..5], verdict), computed in this browser with circomlibjs —
-      the same Poseidon as <span class="mono">circuits/verdict_commit.circom</span>. The rules bitmap
-      inside fields[4] binds the verdict to the exact rules that fired and the effects observed.
-    </div>
+  <p class="caseslabel" id="caseslabel">Recorded field cases — real calls the agent wallet <span class="mono">sarah.ai</span> faced</p>
+  <div class="cases" id="cases" role="radiogroup" aria-labelledby="caseslabel"></div>
+  <p class="hint">Selecting a case loads its recorded screening into the verdict record below. Screen it live to judge today's chain state instead — a window that has closed since the recording reads BLOCK now, correctly.</p>
+
+  <label class="doclabel" for="preview">Transaction preview — the document under inspection</label>
+  <p class="hint">The same document a wallet's contract-call preview produces: <span class="mono">{chainId, from, to, value, data, claim?}</span>. BSC (chainId 56) only in engine v1. Editing a case is fine; the screening always runs on exactly what is in the box.</p>
+  <textarea id="preview" spellcheck="false" rows="9"></textarea>
+
+  <div class="runrow">
+    <button class="run" id="run" type="button">Screen it live</button>
+    <span class="runmeta">Reads chain state and simulates the call. Nothing is signed or sent.</span>
+    <span class="elapsed mono" id="elapsed" aria-hidden="true"></span>
+  </div>
+
+  <div class="error" id="error" role="alert" hidden></div>
+
+  <ol class="pipeline" id="pipeline" aria-label="Screening pipeline">
+    <li class="stage"><span class="snum">1</span><span class="sname">Decode</span><span class="stick" aria-hidden="true">✓</span></li>
+    <li class="stage"><span class="snum">2</span><span class="sname">Census</span><span class="stick" aria-hidden="true">✓</span></li>
+    <li class="stage"><span class="snum">3</span><span class="sname">Simulate</span><span class="stick" aria-hidden="true">✓</span></li>
+    <li class="stage"><span class="snum">4</span><span class="sname">Evaluate</span><span class="stick" aria-hidden="true">✓</span></li>
+    <li class="stage"><span class="snum">5</span><span class="sname">Seal</span><span class="stick" aria-hidden="true">✓</span></li>
+  </ol>
+  <p class="hint pipenote">The engine decodes the call, censuses every privileged function of the target contract, simulates the call against live chain state, evaluates the 30 rules, and seals the verdict into a Poseidon commitment — the input of the <a href="https://github.com/fairusfelles/aegis-firewall/blob/main/circuits/verdict_commit.circom">VerdictCommit</a> circuit.</p>
+</section>
+
+<section id="results" aria-label="Verdict record">
+  <div class="recordhead">
+    <h2>Verdict record</h2>
+    <p class="recordmode" id="recordmode"></p>
+  </div>
+
+  <div class="verdict-panel">
+    <div class="stamp" id="stamp"><span class="stampword" id="stampword"></span><span class="stampsub" id="stampsub"></span></div>
+    <div class="vdetail" id="vdetail"></div>
+  </div>
+
+  <h3>Canonical fields — sealed by the commitment</h3>
+  <div class="ledger">
+    <dl class="kv" id="fields"></dl>
+    <p class="hint">commitment = Poseidon(fields[0..5], verdict), computed with circomlibjs — the same Poseidon as <span class="mono">circuits/verdict_commit.circom</span>. The rules bitmap inside fields[4] binds the verdict to the exact rules that fired and the effects observed, so the verdict can be re-derived from the report alone.</p>
   </div>
 
   <h3>Simulated effects</h3>
-  <div class="panel"><div class="kv" id="effects"></div></div>
+  <div class="ledger">
+    <dl class="kv" id="effects"></dl>
+  </div>
 
   <h3>All 30 rules</h3>
-  <div class="panel" style="padding:6px 10px">
-    <table>
-      <thead><tr><th style="width:110px">Rule</th><th style="width:230px">Name</th><th style="width:130px">Status</th><th>Evidence</th></tr></thead>
-      <tbody id="rules"></tbody>
-    </table>
-    <div class="small muted" style="padding:10px">
-      Rules marked <span class="chip ni">NOT_IMPLEMENTED</span> cannot be evaluated by engine v1:
-      AEGIS-B08, B11, B12, W06, W07, W08 and A03 need holder distribution, LP holder/lock status,
-      USD pool liquidity or deployer labels from a keyed explorer/indexer API. An unimplemented
-      rule is reported, never treated as passed. Some implemented rules are probe-conditional and
-      also report NOT_IMPLEMENTED for a given screening when their probe cannot run (e.g. no
-      PancakeSwap V2 pair resolves, or the wallet holds no token to probe a sell with) — the
-      reason column says which.
+  <div class="ledger tablewrap">
+    <div class="tablescroll" tabindex="0">
+      <table>
+        <thead><tr><th scope="col">Rule</th><th scope="col">Name</th><th scope="col">Status</th><th scope="col">Evidence</th></tr></thead>
+        <tbody id="rules"></tbody>
+      </table>
+    </div>
+    <p class="hint">Rules marked NOT_IMPLEMENTED cannot be evaluated by engine v1: B08, B11, B12, W06, W07, W08 and A03 need holder distribution, LP holder and lock status, USD pool liquidity, or deployer labels from a keyed explorer or indexer. An unimplemented rule is reported, never treated as passed. Some implemented rules are probe-conditional and also report NOT_IMPLEMENTED for a given screening when their probe cannot run — the evidence column says which.</p>
+  </div>
+</section>
+
+<section id="sealed" aria-label="Sealed proof">
+  <h2>Sealed on zkVerify</h2>
+  <p class="sectionintro">One verdict on this page has already been proven and sealed. The recorded RuninAI screening above was committed with the VerdictCommit circuit (Groth16), submitted to zkVerify testnet through Kurier, and finalized by the network. The commitment below is that report's own — it matches the recorded report exactly. Check the transaction on Subscan; that is the point of the project.</p>
+  <div class="ledger">
+    <dl class="kv" id="sealedkv"></dl>
+  </div>
+</section>
+
+<section id="policy" aria-label="Policy summary">
+  <h2>The policy — 30 rules, three bands</h2>
+  <p class="sectionintro">Evaluation is deterministic and severity-ordered: any BLOCK rule fired makes the verdict BLOCK; else any WARN rule makes it WARN; else ALLOW. The verdict is a pure function of the fired-rule bitmap, and no model judgement is in the verdict path. The full rule set, thresholds, and field mapping are in <a href="https://github.com/fairusfelles/aegis-firewall/blob/main/docs/POLICY.md">POLICY.md</a>.</p>
+  <div class="bands">
+    <div class="band">
+      <div class="bandhead"><span class="bandname block">Block</span><span class="bandcount">14 rules — verdict 2</span></div>
+      <p>Do not sign. There is no override path in the agent. Fires on, among others: an unlimited approval to an untrusted spender (B01), a simulation that reverts — the engine fails closed (B04), and a live hidden mint with no enforced supply cap (B06).</p>
+    </div>
+    <div class="band">
+      <div class="bandhead"><span class="bandname warn">Warn</span><span class="bandcount">13 rules — verdict 1</span></div>
+      <p>Do not sign autonomously. The fired rules go to the human, who confirms the exact preview or walks away. Fires on, among others: retained authority that is clean today but changeable tomorrow (W01, W02, W05), and a token whose own swapback path swaps with zero slippage protection (W11).</p>
+    </div>
+    <div class="band">
+      <div class="bandhead"><span class="bandname allow">Allow-context</span><span class="bandcount">3 rules — verdict 0 contributors</span></div>
+      <p>Context checks that can only support an ALLOW. They never raise a verdict; they record why a clean call is clean, so an ALLOW is evidence, not an absence of checks.</p>
     </div>
   </div>
-</div>
+  <div class="honesty">
+    <p><strong>Honest labels.</strong> Engine v1 implements 23 of the 30 rules; the other seven report NOT_IMPLEMENTED in every report rather than passing silently. A verdict is anchored to one block and expires with it. What the engine cannot detect at all — off-chain intent, time-delayed traps, novel logic bugs — is stated in <a href="https://github.com/fairusfelles/aegis-firewall/blob/main/docs/POLICY.md#8-honesty-section--what-this-engine-cannot-detect">POLICY §8</a>. The proof proves the report, not the world.</p>
+  </div>
+</section>
+
+</main>
 
 <footer class="site">
-  AEGIS screening engine v1.0.0 · rule set v1 · BSC (chainId 56) ·
-  Source: <a href="https://github.com/fairusfelles/aegis-firewall">github.com/fairusfelles/aegis-firewall</a> ·
-  What this engine cannot detect is stated in
-  <a href="https://github.com/fairusfelles/aegis-firewall/blob/main/docs/POLICY.md#8-honesty-section--what-this-engine-cannot-detect">POLICY §8</a> —
-  the proof proves the report, not the world.
+  <p>AEGIS screening engine v1.0.0, rule set v1, BSC (chainId 56). This demo bundles the repository's engine unmodified and runs it in your browser. Source: <a href="https://github.com/fairusfelles/aegis-firewall">github.com/fairusfelles/aegis-firewall</a>.</p>
 </footer>
 
 </div>
+<p class="visually-hidden" id="livestatus" aria-live="polite"></p>
 <script src="assets/aegis.js"></script>
+<script src="assets/anime.min.js"></script>
 <script src="assets/app.js"></script>
 </body>
 </html>

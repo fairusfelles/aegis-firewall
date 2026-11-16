@@ -14,9 +14,14 @@
 // The three replay cases embed the committed preview fixtures and the
 // recorded reports from engine/replays/, so the page can show the
 // screening recorded at build time next to a fresh live re-screen.
+// Each case carries both a slim summary (for the case list) and the
+// full recorded report (for the verdict record view). The sealed-proof
+// panel reads proofs/sealed-runinai.json — the same record the repo
+// commits — so the page can never drift from the sealed facts.
 
 const { screenPreview } = require("../../engine/screen.js");
 const fields = require("../../engine/lib/fields.js");
+const sealed = require("../../proofs/sealed-runinai.json");
 
 function slimRecorded(report) {
   return {
@@ -39,14 +44,16 @@ const cases = {
       "Free-share claim on the CanopySale contract during the 2026-11-10 launch race. The tranche sold out in seconds; sarah.ai never claimed.",
     preview: require("../../engine/replays/feg-claimfree-share.preview.json"),
     recorded: slimRecorded(require("../../engine/replays/feg-claimfree-share.report.json")),
+    recordedFull: require("../../engine/replays/feg-claimfree-share.report.json"),
   },
   runinai: {
     id: "runinai",
     title: "RuninAI — claimFree()",
     blurb:
-      "Free-share claim on FairAgentLaunchV3, executed successfully by sarah.ai on 2026-11-02 (receipt-verified on the day).",
+      "Free-share claim on FairAgentLaunchV3, executed successfully by sarah.ai on 2026-11-02 (receipt-verified on the day). This report's verdict is the one sealed on zkVerify.",
     preview: require("../../engine/replays/runinai-claimfree.preview.json"),
     recorded: slimRecorded(require("../../engine/replays/runinai-claimfree.report.json")),
+    recordedFull: require("../../engine/replays/runinai-claimfree.report.json"),
   },
   bnbbaby: {
     id: "bnbbaby",
@@ -55,6 +62,7 @@ const cases = {
       "Free mint on BabyMint, executed successfully by sarah.ai on 2026-11-02 (receipt-verified on the day).",
     preview: require("../../engine/replays/bnbbaby-mint0.preview.json"),
     recorded: slimRecorded(require("../../engine/replays/bnbbaby-mint0.report.json")),
+    recordedFull: require("../../engine/replays/bnbbaby-mint0.report.json"),
   },
 };
 
@@ -72,7 +80,7 @@ const NOT_IMPLEMENTED_V1 = [
   "AEGIS-A03",
 ];
 
-const api = { screenPreview, fields, cases, NOT_IMPLEMENTED_V1 };
+const api = { screenPreview, fields, cases, sealed, NOT_IMPLEMENTED_V1 };
 
 // Publish on the global object: window.AEGIS in the browser build,
 // globalThis.AEGIS in the Node CJS test bundle. (A top-level
