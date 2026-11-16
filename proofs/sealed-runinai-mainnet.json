@@ -1,0 +1,14 @@
+{
+  "case": "RuninAI claimFree() — AEGIS verdict BLOCK (2)",
+  "commitment": "973771282442562498600276487222294272220806217938284965113254123749639886113",
+  "network": "zkVerify MAINNET",
+  "via": "Kurier mainnet API (api.kurier.xyz), key held only on the operator's device",
+  "kurierJobId": "cb3b8859-e194-11f1-838e-1e6a0d14f999",
+  "txHash": "0x6b41140580dc569f95ba97d5a5e0bbd94a23c2229e80f7b495d4981ae2e315ae",
+  "blockHash": "0x559bd9e217914428206b2f03a09adc968e81871058e047cfd0482e9755d1684d",
+  "status": "Finalized",
+  "createdAt": "2026-11-16T08:07:41.000Z",
+  "finalizedAt": "2026-11-16T08:08:01.000Z",
+  "explorer": "https://zkverify.subscan.io/extrinsic/0x6b41140580dc569f95ba97d5a5e0bbd94a23c2229e80f7b495d4981ae2e315ae",
+  "note": "Same Groth16 proof as the earlier testnet seal (proofs/sealed-runinai.json, 2026-11-16). The proof, circuit and verdict are network-agnostic; this record is the mainnet sealing of the identical proof via Kurier mainnet."
+}
