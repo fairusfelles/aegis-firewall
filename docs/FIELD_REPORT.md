@@ -96,4 +96,17 @@ publicly checkable on Subscan, full record in
 `proofs/sealed-runinai.json`. A firewall with a verified design, a
 working engine, and now a sealed verdict: the last mile has a hash.
 
+*Addendum, later the same day.* The last mile had a wrong turn in
+it: the official build guide specifies zkVerify **mainnet** for
+proof submission, and our seal was on testnet. The proof itself
+never cared — a Groth16 proof is network-agnostic — so the fix was
+one API address and a fresh key. The operator generated a mainnet
+Kurier key, ran `seal-mainnet/seal-mainnet.js` on the same phone,
+and the identical verdict proof reached **Finalized** on zkVerify
+mainnet: job `cb3b8859-e194-11f1-838e-1e6a0d14f999`, transaction
+`0x6b41140580dc569f95ba97d5a5e0bbd94a23c2229e80f7b495d4981ae2e315ae`,
+record in `proofs/sealed-runinai-mainnet.json`. The testnet record
+stays in the repo too — a build log that hides its own wrong turn
+would be doing exactly what this firewall exists to catch.
+
 — @mahrusfelles, builder log, 16 Nov 2026

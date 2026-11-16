@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="aegis-build" content="2026-11-16.2">
+<meta name="aegis-build" content="2026-11-16.3">
 <title>AEGIS — Verifiable Signing Firewall for Agent Wallets</title>
 <meta name="description" content="AEGIS screens a transaction before an agent wallet signs it: decode, simulate, judge against a 30-rule policy, and seal the verdict into a Poseidon commitment for zkVerify. This demo runs the real engine in your browser.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-<!-- aegis-demo build: 2026-11-16.2 -->
+<!-- aegis-demo build: 2026-11-16.3 -->
 <div class="wrap">
 
 <header class="site">
@@ -104,7 +104,7 @@
 
 <section id="sealed" aria-label="Sealed proof">
   <h2>Sealed on zkVerify</h2>
-  <p class="sectionintro">One verdict on this page has already been proven and sealed. The recorded RuninAI screening above was committed with the VerdictCommit circuit (Groth16), submitted to zkVerify testnet through Kurier, and finalized by the network. The commitment below is that report's own — it matches the recorded report exactly. Check the transaction on Subscan; that is the point of the project.</p>
+  <p class="sectionintro">One verdict on this page has already been proven and sealed. The recorded RuninAI screening above was committed with the VerdictCommit circuit (Groth16), submitted to zkVerify mainnet through Kurier, and finalized by the network. The commitment below is that report's own — it matches the recorded report exactly. Check the transaction on Subscan; that is the point of the project.</p>
   <div class="ledger">
     <dl class="kv" id="sealedkv"></dl>
   </div>

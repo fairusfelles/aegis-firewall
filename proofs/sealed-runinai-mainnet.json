@@ -1,14 +1,41 @@
 {
-  "case": "RuninAI claimFree() — AEGIS verdict BLOCK (2)",
-  "commitment": "973771282442562498600276487222294272220806217938284965113254123749639886113",
-  "network": "zkVerify MAINNET",
-  "via": "Kurier mainnet API (api.kurier.xyz), key held only on the operator's device",
-  "kurierJobId": "cb3b8859-e194-11f1-838e-1e6a0d14f999",
-  "txHash": "0x6b41140580dc569f95ba97d5a5e0bbd94a23c2229e80f7b495d4981ae2e315ae",
-  "blockHash": "0x559bd9e217914428206b2f03a09adc968e81871058e047cfd0482e9755d1684d",
-  "status": "Finalized",
-  "createdAt": "2026-11-16T08:07:41.000Z",
-  "finalizedAt": "2026-11-16T08:08:01.000Z",
-  "explorer": "https://zkverify.subscan.io/extrinsic/0x6b41140580dc569f95ba97d5a5e0bbd94a23c2229e80f7b495d4981ae2e315ae",
-  "note": "Same Groth16 proof as the earlier testnet seal (proofs/sealed-runinai.json, 2026-11-16). The proof, circuit and verdict are network-agnostic; this record is the mainnet sealing of the identical proof via Kurier mainnet."
+  "circuit": "VerdictCommit (circuits/verdict_commit.circom)",
+  "how_it_was_sealed": "Operator ran seal-mainnet/seal-mainnet.js on their own device (Termux) with their Kurier MAINNET API key in a local key.txt \u2014 the key never left the device. The register/submit/poll outputs were produced by that run; the finalized job-status values in this record are Kurier mainnet API's own response.",
+  "kurier_job": {
+    "block_explorer_url": "https://zkverify.subscan.io/block/0x559bd9e217914428206b2f03a09adc968e81871058e047cfd0482e9755d1684d",
+    "block_hash": "0x559bd9e217914428206b2f03a09adc968e81871058e047cfd0482e9755d1684d",
+    "created_at_utc": "2026-11-16T08:07:41Z",
+    "finalized_at_utc": "2026-11-16T08:08:01Z",
+    "job_id": "cb3b8859-e194-11f1-838e-1e6a0d14f999",
+    "status": "Finalized",
+    "tx_explorer_url": "https://zkverify.subscan.io/extrinsic/0x6b41140580dc569f95ba97d5a5e0bbd94a23c2229e80f7b495d4981ae2e315ae",
+    "tx_hash": "0x6b41140580dc569f95ba97d5a5e0bbd94a23c2229e80f7b495d4981ae2e315ae"
+  },
+  "network": "zkVerify mainnet (via Kurier mainnet API)",
+  "note": "Identical Groth16 proof to the earlier testnet seal (proofs/sealed-runinai.json, finalized 2026-11-16T05:22:39Z). Proof, circuit and verdict are network-agnostic; this is the mainnet sealing of the same proof.",
+  "proof_files": {
+    "local_verification": "snarkJS: OK! (public signals = [verdict, commitment], matching the engine report exactly)",
+    "proof": "seal-mainnet/runinai_proof.json",
+    "public_signals": "seal-mainnet/runinai_public.json",
+    "verification_key": "seal-mainnet/verification_key.json"
+  },
+  "proof_type": "groth16",
+  "report": "engine/replays/runinai-claimfree.report.json",
+  "report_summary": {
+    "call": "claimFree()",
+    "commitment": "973771282442562498600276487222294272220806217938284965113254123749639886113",
+    "fields": [
+      "1",
+      "56",
+      "11033333002124409167004518207820315382108636855136374165509195851716823805418",
+      "8076093942563128607991707083346701958323582301805879035482063633688646044953",
+      "13094670360401374692115142252099735895582557823074918860834465634173729583569",
+      "133802259"
+    ],
+    "target": "RuninAI launch contract 0xfB50746BCc9D585AEb49cd410Fa0100b657ce9e6 (BSC)",
+    "verdict": 2,
+    "verdict_label": "BLOCK"
+  },
+  "sealed": true,
+  "sealed_at_utc": "2026-11-16T08:08:01Z"
 }

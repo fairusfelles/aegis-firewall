@@ -1,1 +1,6 @@
-{"statusCode":401,"code":"UNAUTHORIZED","error":"Unauthorized","message":"Unauthorized or disabled API key"}
+{
+  "statusCode": 401,
+  "code": "UNAUTHORIZED",
+  "error": "Unauthorized",
+  "message": "Unauthorized or disabled API key"
+}

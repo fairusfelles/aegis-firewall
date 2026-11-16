@@ -16,12 +16,12 @@
 // screening recorded at build time next to a fresh live re-screen.
 // Each case carries both a slim summary (for the case list) and the
 // full recorded report (for the verdict record view). The sealed-proof
-// panel reads proofs/sealed-runinai.json — the same record the repo
+// panel reads proofs/sealed-runinai-mainnet.json — the same record the repo
 // commits — so the page can never drift from the sealed facts.
 
 const { screenPreview } = require("../../engine/screen.js");
 const fields = require("../../engine/lib/fields.js");
-const sealed = require("../../proofs/sealed-runinai.json");
+const sealed = require("../../proofs/sealed-runinai-mainnet.json");
 
 function slimRecorded(report) {
   return {

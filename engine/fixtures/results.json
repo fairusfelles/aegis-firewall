@@ -1,5 +1,5 @@
 {
-  "ranAt": "2026-11-15T20:44:57.981Z",
+  "ranAt": "2026-11-15T20:50:41.530Z",
   "total": 5,
   "passed": 5,
   "results": [
@@ -18,12 +18,12 @@
       ],
       "verdict": 2,
       "verdictLabel": "BLOCK",
-      "blockNumber": 133801698,
+      "blockNumber": 133802499,
       "triggered": [
         "AEGIS-B01"
       ],
       "rulesBitmap": "1",
-      "commitment": "16347324101315285136774702614803048923213733388316614394556337020207806365551",
+      "commitment": "8572847809143765937333144095798763078942579680291770900944473352711973207437",
       "note": "Unlimited approve (2^256-1) on USDT to a freshly deployed contract with no Sourcify match (0x4bbc93371D26370E986a6B717c6Fc1928f2e85A4, pulled from a recent BSC block). B01 must fire via the unverified-spender branch."
     },
     {
@@ -41,10 +41,10 @@
       ],
       "verdict": 0,
       "verdictLabel": "ALLOW",
-      "blockNumber": 133801738,
+      "blockNumber": 133802536,
       "triggered": [],
       "rulesBitmap": "0",
-      "commitment": "613563473371659041659131965052142711422676524346002528984601343665278439321",
+      "commitment": "14453794438806352772773216709043086117448328920438790942700692733039186925354",
       "note": "Unlimited approve on USDT to the PancakeSwap V2 router (Sourcify-verified; census shows no retained privileged functions). No BLOCK may fire."
     },
     {
@@ -58,10 +58,10 @@
       ],
       "verdict": 0,
       "verdictLabel": "ALLOW",
-      "blockNumber": 133801776,
+      "blockNumber": 133802549,
       "triggered": [],
       "rulesBitmap": "0",
-      "commitment": "17910226770804644537383119548489089171943078805833243356298372010368647708589",
+      "commitment": "20454976721946385162020345127873021635646403542048108593308029786299947713936",
       "note": "Plain 0.001 BNB transfer to an EOA with a claim that matches the value exactly. Must ALLOW with bitmap 0."
     },
     {
@@ -79,12 +79,12 @@
       ],
       "verdict": 2,
       "verdictLabel": "BLOCK",
-      "blockNumber": 133801786,
+      "blockNumber": 133802551,
       "triggered": [
         "AEGIS-B04"
       ],
       "rulesBitmap": "8",
-      "commitment": "3518068809868765496847334373525813297299881763817980009256455766721644231561",
+      "commitment": "905535923396709756030388564472948107135020528551598150232472325724404540160",
       "note": "USDT transfer of 10^30 from a wallet that does not hold that balance — simulation reverts; the engine fails closed."
     },
     {
@@ -102,12 +102,12 @@
       ],
       "verdict": 2,
       "verdictLabel": "BLOCK",
-      "blockNumber": 133801818,
+      "blockNumber": 133802580,
       "triggered": [
         "AEGIS-B03"
       ],
       "rulesBitmap": "4",
-      "commitment": "9347506271648237178011934744804263041001664417269170309443056350155005454017",
+      "commitment": "913357710605111850562944225347611733638139120866587111083927077235368948287",
       "note": "WBNB deposit() carrying 0.05 BNB while the preview claim states nativeOut = 0. Claims-vs-effects must catch it."
     }
   ]

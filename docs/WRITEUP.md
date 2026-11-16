@@ -1,7 +1,7 @@
 # AEGIS — Verifiable Signing Firewall for Agent Wallets
 
 **Wildcard submission — Agent Games (zkVerify)**
-Participant: @mahrusfelles · Repository: https://github.com/fairusfelles/aegis-firewall · Sealed proof: https://zkverify-testnet.subscan.io/extrinsic/0x508f00f093f64d9a75a9173f576003cad2603918ded63de5a7b026cd7ec61714
+Participant: @mahrusfelles · Repository: https://github.com/fairusfelles/aegis-firewall · Sealed proof (zkVerify mainnet): https://zkverify.subscan.io/extrinsic/0x6b41140580dc569f95ba97d5a5e0bbd94a23c2229e80f7b495d4981ae2e315ae
 
 ## The problem
 
@@ -110,19 +110,25 @@ source.
   Each replay report carries the six canonical fields and its Poseidon
   commitment (BSC blocks 133802131–133802259), ready to seal.
 
-**Sealed on zkVerify — done, and publicly checkable.** The RuninAI
-replay verdict above (BLOCK, BSC block 133802259) was sealed on
-zkVerify testnet via Kurier on 2026-11-16: the Groth16 proof of its
-report (public signals = verdict + the exact Poseidon commitment in
-the engine report) reached job status **Finalized**. Full record in
-`proofs/sealed-runinai.json`:
+**Sealed on zkVerify mainnet — done, and publicly checkable.** The
+RuninAI replay verdict above (BLOCK, BSC block 133802259) was sealed
+on zkVerify **mainnet** via Kurier on 2026-11-16: the Groth16 proof
+of its report (public signals = verdict + the exact Poseidon
+commitment in the engine report) reached job status **Finalized**.
+Full record in `proofs/sealed-runinai-mainnet.json`:
 
-- Job ID: `ad414c35-e17d-11f1-bb46-22f5290c9c2d`
-- Transaction: `0x508f00f093f64d9a75a9173f576003cad2603918ded63de5a7b026cd7ec61714`
-  (https://zkverify-testnet.subscan.io/extrinsic/0x508f00f093f64d9a75a9173f576003cad2603918ded63de5a7b026cd7ec61714)
+- Job ID: `cb3b8859-e194-11f1-838e-1e6a0d14f999`
+- Transaction: `0x6b41140580dc569f95ba97d5a5e0bbd94a23c2229e80f7b495d4981ae2e315ae`
+  (https://zkverify.subscan.io/extrinsic/0x6b41140580dc569f95ba97d5a5e0bbd94a23c2229e80f7b495d4981ae2e315ae)
 
-The sealing ran on the operator's own device (`seal/seal.js`, key in
-a local file that never left the phone) — the same key-handling
+(The identical proof was first sealed on zkVerify testnet earlier
+the same day — record in `proofs/sealed-runinai.json` — before we
+caught that the official build guide specifies mainnet and re-sealed
+it there. The proof, circuit and verdict are network-agnostic.)
+
+The sealing ran on the operator's own device
+(`seal-mainnet/seal-mainnet.js`, key in a local file that never left
+the phone) — the same key-handling
 discipline AEGIS exists to protect. Earlier blocked attempts on both
 submission paths are documented with raw evidence in `SPIKE.md`.
 
@@ -152,7 +158,7 @@ that hides its limits is just another lying preview:
 ## Links
 
 - Repository: https://github.com/fairusfelles/aegis-firewall
-- Sealed proof (zkVerify testnet, Finalized): https://zkverify-testnet.subscan.io/extrinsic/0x508f00f093f64d9a75a9173f576003cad2603918ded63de5a7b026cd7ec61714
+- Sealed proof (zkVerify mainnet, Finalized): https://zkverify.subscan.io/extrinsic/0x6b41140580dc569f95ba97d5a5e0bbd94a23c2229e80f7b495d4981ae2e315ae
 - Policy rule set: `docs/POLICY.md` · Proof spike evidence: `SPIKE.md`
   · Engine + replay reports: `engine/`
 

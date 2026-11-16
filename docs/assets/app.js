@@ -103,15 +103,15 @@
     const s = AEGIS.sealed;
     const k = s.kurier_job;
     const rows = [
-      ["Status", '<span class="status-final">Finalized</span> <span class="sub">on zkVerify testnet</span>'],
+      ["Status", '<span class="status-final">Finalized</span> <span class="sub">on zkVerify mainnet</span>'],
       ["Report", "RuninAI claimFree() — <span class='mono'>engine/replays/runinai-claimfree.report.json</span>"],
       ["Verdict sealed", "<strong>" + s.report_summary.verdict + " — " + esc(s.report_summary.verdict_label) + "</strong>"],
       ["Commitment", "<span class='mono break'>" + esc(s.report_summary.commitment) + "</span>"],
       ["Kurier job", "<span class='mono break'>" + esc(k.job_id) + "</span>"],
       ["Transaction", "<a href='" + esc(k.tx_explorer_url) + "'><span class='mono break'>" + esc(k.tx_hash) + "</span></a>"],
-      ["Finalized", esc(utc(k.finalized_at_utc)) + " — 27 seconds after submission"],
+      ["Finalized", esc(utc(k.finalized_at_utc)) + " — 20 seconds after submission"],
       ["Proof", "Groth16 · VerdictCommit (<span class='mono'>circuits/verdict_commit.circom</span>) · verified locally with snarkjs before submission"],
-      ["How it was sealed", "The operator ran <span class='mono'>seal/seal.js</span> on their own device with their Kurier testnet key in a local file — the key never left the device."],
+      ["How it was sealed", "The operator ran <span class='mono'>seal-mainnet/seal-mainnet.js</span> on their own device with their Kurier mainnet key in a local file — the key never left the device."],
     ];
     $("sealedkv").innerHTML = rows
       .map((r) => "<dt>" + r[0] + "</dt><dd>" + r[1] + "</dd>")
