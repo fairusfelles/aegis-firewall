@@ -1,7 +1,7 @@
 # AEGIS — Verifiable Signing Firewall for Agent Wallets
 
 **Wildcard submission — Agent Games (zkVerify)**
-Participant: @mahrusfelles · Repository: https://github.com/fairusfelles/aegis-firewall · Demo: {{DEMO_URL}}
+Participant: @mahrusfelles · Repository: https://github.com/fairusfelles/aegis-firewall · Sealed proof: https://zkverify-testnet.subscan.io/extrinsic/0x508f00f093f64d9a75a9173f576003cad2603918ded63de5a7b026cd7ec61714
 
 ## The problem
 
@@ -110,25 +110,21 @@ source.
   Each replay report carries the six canonical fields and its Poseidon
   commitment (BSC blocks 133802131–133802259), ready to seal.
 
-**The one step that is NOT done — stated plainly.** The final on-chain
-sealing of a proof via zkVerify is **pending a human-only gate**, and
-we do not claim otherwise. Both submission paths are blocked at
-exactly one human step, with raw evidence in `SPIKE.md`:
+**Sealed on zkVerify — done, and publicly checkable.** The RuninAI
+replay verdict above (BLOCK, BSC block 133802259) was sealed on
+zkVerify testnet via Kurier on 2026-11-16: the Groth16 proof of its
+report (public signals = verdict + the exact Poseidon commitment in
+the engine report) reached job status **Finalized**. Full record in
+`proofs/sealed-runinai.json`:
 
-- **Kurier** requires an API key issued through a human account signup
-  at testnet.kurier.xyz. Without a key the API returns "Payment
-  required"; with a placeholder key and a complete, valid request it
-  returns HTTP 401, "Unauthorized or disabled API key". The
-  register/submit scripts are written and ready
-  (`scripts/kurier_register.js`, `scripts/kurier_submit.js`).
-- **Volta (zkVerifyJS fallback)** requires tVFY; the throwaway account
-  stands at `free: "0"`, and every documented faucet route is
-  human-gated (wallet-connect + CAPTCHA, Discord, or an email form).
-  The submit script is ready (`scripts/volta_submit.js`).
+- Job ID: `ad414c35-e17d-11f1-bb46-22f5290c9c2d`
+- Transaction: `0x508f00f093f64d9a75a9173f576003cad2603918ded63de5a7b026cd7ec61714`
+  (https://zkverify-testnet.subscan.io/extrinsic/0x508f00f093f64d9a75a9173f576003cad2603918ded63de5a7b026cd7ec61714)
 
-The moment either gate is passed, sealing a real engine verdict is a
-two-command run, and the resulting transaction hash becomes the public
-proof reference.
+The sealing ran on the operator's own device (`seal/seal.js`, key in
+a local file that never left the phone) — the same key-handling
+discipline AEGIS exists to protect. Earlier blocked attempts on both
+submission paths are documented with raw evidence in `SPIKE.md`.
 
 ## Limits
 
@@ -156,7 +152,7 @@ that hides its limits is just another lying preview:
 ## Links
 
 - Repository: https://github.com/fairusfelles/aegis-firewall
-- Demo: {{DEMO_URL}}
+- Sealed proof (zkVerify testnet, Finalized): https://zkverify-testnet.subscan.io/extrinsic/0x508f00f093f64d9a75a9173f576003cad2603918ded63de5a7b026cd7ec61714
 - Policy rule set: `docs/POLICY.md` · Proof spike evidence: `SPIKE.md`
   · Engine + replay reports: `engine/`
 
