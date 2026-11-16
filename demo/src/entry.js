@@ -74,5 +74,9 @@ const NOT_IMPLEMENTED_V1 = [
 
 const api = { screenPreview, fields, cases, NOT_IMPLEMENTED_V1 };
 
-if (typeof window !== "undefined") window.AEGIS = api;
-module.exports = api;
+// Publish on the global object: window.AEGIS in the browser build,
+// globalThis.AEGIS in the Node CJS test bundle. (A top-level
+// `module.exports` in the entry is not wrapped by esbuild's IIFE
+// output and would throw in a browser.)
+const globalObj = typeof window !== "undefined" ? window : globalThis;
+globalObj.AEGIS = api;

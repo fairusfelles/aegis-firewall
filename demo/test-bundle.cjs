@@ -35,7 +35,9 @@ global.Worker = class {
   }
 };
 
-const api = require("/tmp/aegis-test-bundle.cjs");
+require("/tmp/aegis-test-bundle.cjs");
+const api = globalThis.AEGIS;
+if (!api) throw new Error("bundle did not publish globalThis.AEGIS");
 
 const reports = {
   feg: require("../engine/replays/feg-claimfree-share.report.json"),
